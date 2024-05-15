@@ -1,0 +1,9 @@
+.main {
+  max-width: 960px;
+  padding: 0 32px;
+  margin: 0 auto;
+}
+
+.main > h3 {
+  margin: 32px 0 16px;
+}

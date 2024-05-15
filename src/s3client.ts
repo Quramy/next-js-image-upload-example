@@ -54,7 +54,7 @@ export async function putThumbnail(objectId: string, buf: Buffer) {
 
 export async function getSignedURLForGetObject(
   objectId: string,
-  type: "thumbnail" | "raw" = "thumbnail"
+  type: "thumbnail" | "raw" = "thumbnail",
 ) {
   const s3client = getS3Client();
   const command = new GetObjectCommand({

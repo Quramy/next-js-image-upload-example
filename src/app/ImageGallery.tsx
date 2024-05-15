@@ -3,6 +3,8 @@ import Link from "next/link";
 import { primsa } from "@/prisma";
 import { getSignedURLForGetObject } from "@/s3client";
 
+import styles from "./ImageGallery.module.css";
+
 export async function ImageGallery() {
   const images = await primsa.image.findMany({
     select: {
@@ -19,12 +21,12 @@ export async function ImageGallery() {
       getSignedURLForGetObject(objectId, "thumbnail").then((url) => ({
         objectId,
         url,
-      }))
-    )
+      })),
+    ),
   );
 
   return (
-    <ul>
+    <ul className={styles.list}>
       {imageItems.map(({ url, objectId }) => (
         <li key={objectId}>
           <Link href={`/image/${objectId}`}>
