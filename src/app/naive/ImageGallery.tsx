@@ -25,15 +25,15 @@ export async function ImageGallery() {
       getSignedURLForGetObject(objectId, "thumbnail").then((url) => ({
         objectId,
         url,
-      }))
-    )
+      })),
+    ),
   );
 
   return (
     <ul className={styles.list}>
       {imageItems.map(({ url, objectId }) => (
         <li key={objectId}>
-          <Link href={`/image/${objectId}`}>
+          <Link href={`naive/image/${objectId}`}>
             <img src={url} alt="" />
           </Link>
         </li>

@@ -1,19 +1,13 @@
-import { UploadForm } from "./UploadForm";
-import { ImageGallery } from "./ImageGallery";
-import styles from "./page.module.css";
+import Link from "next/link";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
-async function Page() {
+export default function Page() {
   return (
-    <main className={styles.main}>
-      <h3>Add new image</h3>
-      <UploadForm />
-      <h3>Uploaded images</h3>
-      <ImageGallery />
+    <main>
+      <ul>
+        <li>
+          <Link href="/naive">Naive implementation</Link>
+        </li>
+      </ul>
     </main>
   );
 }
-
-export default Page;

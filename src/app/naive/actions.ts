@@ -32,7 +32,11 @@ export async function postImage({ objectId }: { readonly objectId: string }) {
   }
 
   const inputBuf = await getObject(objectId);
-  const outputBuf = await sharp(inputBuf).rotate().resize(200).webp().toBuffer();
+  const outputBuf = await sharp(inputBuf)
+    .rotate()
+    .resize(200)
+    .webp()
+    .toBuffer();
   await putThumbnail(objectId, outputBuf);
 
   await primsa.image.create({
