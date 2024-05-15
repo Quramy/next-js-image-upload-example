@@ -16,13 +16,17 @@ export async function ImageGallery() {
     },
   });
 
+  if (!images.length) {
+    return <div>No images</div>;
+  }
+
   const imageItems = await Promise.all(
     images.map(({ objectId }) =>
       getSignedURLForGetObject(objectId, "thumbnail").then((url) => ({
         objectId,
         url,
-      })),
-    ),
+      }))
+    )
   );
 
   return (
