@@ -1,29 +1,56 @@
 "use client";
 
-import { useRef } from "react";
+import { useState, useEffect, Fragment, type ChangeEvent } from "react";
+import { useFormState as useActionState } from "react-dom";
 
-import { getPresignedUrlForUpload, postImage } from "./actions";
+import { getPresignedUrlForUpload, createImage } from "./actions";
 import { FileInput } from "./FileInput";
 
 export function UploadForm() {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [{ errorMessages, latestUploadedObjectId }, createImageAction] =
+    useActionState(createImage, {
+      succeeded: true,
+      latestUploadedObjectId: undefined,
+      errorMessages: [],
+    });
+
+  const [generatedId, setGeneratedId] = useState<string | null>(null);
+
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files?.length !== 1) return;
+    const body = event.target.files[0];
+    const { objectId, presignedURL } = await getPresignedUrlForUpload();
+    await fetch(presignedURL, { method: "PUT", body });
+    setGeneratedId(objectId);
+  };
+
+  useEffect(() => {
+    setGeneratedId(null);
+  }, [latestUploadedObjectId]);
+
   return (
-    <form
-      onSubmit={async (event) => {
-        event.preventDefault();
-        if (!fileInputRef.current?.files?.length) return;
-        const file = fileInputRef.current.files[0];
-        const { objectId, presignedURL } = await getPresignedUrlForUpload();
-        await fetch(presignedURL, {
-          method: "PUT",
-          body: file,
-        });
-        await postImage({ objectId });
-      }}
-    >
-      <FileInput thumbnailWidth={200} ref={fileInputRef} />
+    <form action={createImageAction}>
+      {errorMessages.length > 0 && (
+        <div role="alert">
+          {errorMessages.map((msg) => (
+            <p>{msg}</p>
+          ))}
+        </div>
+      )}
+      <Fragment key={latestUploadedObjectId ?? "initial"}>
+        <FileInput
+          name={generatedId ? undefined : "imageFile"}
+          thumbnailWidth={200}
+          onChange={handleFileChange}
+        />
+        {generatedId && (
+          <input type="hidden" name="generatedId" value={generatedId} />
+        )}
+      </Fragment>
       <nav>
-        <button type="submit">Upload</button>
+        <button type="submit" disabled={!generatedId}>
+          Submit
+        </button>
       </nav>
     </form>
   );

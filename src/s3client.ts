@@ -19,6 +19,8 @@ function getS3Client() {
   return client;
 }
 
+export type ImageType = "raw" | "thumbnail";
+
 export async function ensureObjectExistence(objectId: string) {
   const s3client = getS3Client();
   try {
@@ -32,29 +34,37 @@ export async function ensureObjectExistence(objectId: string) {
   }
 }
 
-export async function getObject(objectId: string) {
+export async function getImageObject(
+  objectId: string,
+  type: ImageType = "raw",
+) {
   const s3client = getS3Client();
   const res = await s3client.getObject({
     Bucket: bucketName,
-    Key: `images/${objectId}/raw`,
+    Key: `images/${objectId}/${type}`,
   });
   if (!res.Body) throw new Error("no object");
   return res.Body.transformToByteArray();
 }
 
-export async function putThumbnail(objectId: string, buf: Buffer) {
+export async function putImageObject(
+  objectId: string,
+  type: ImageType,
+  contentType: string,
+  buf: Buffer | ReadableStream,
+) {
   const s3client = getS3Client();
   await s3client.putObject({
     Bucket: bucketName,
-    Key: `images/${objectId}/thumbnail`,
+    Key: `images/${objectId}/${type}`,
     Body: buf,
-    ContentType: "image/webp",
+    ContentType: contentType,
   });
 }
 
 export async function getSignedURLForGetObject(
   objectId: string,
-  type: "thumbnail" | "raw" = "thumbnail",
+  type: ImageType = "thumbnail",
 ) {
   const s3client = getS3Client();
   const command = new GetObjectCommand({

@@ -1,0 +1,11 @@
+.preview {
+  margin: 16px 0;
+  display: flex;
+  gap: 16px;
+  height: 200px;
+}
+
+.preview > :first-child {
+  flex: 0 0 200px;
+  overflow: hidden;
+}
